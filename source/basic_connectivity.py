@@ -2,7 +2,8 @@ import mysql.connector
 
 #CREATE SCHEMA
 #NOTICE THAT THERE IS NO SCHEMA SELECTED IN CONNECTION REQUEST
-dataBase = mysql.connector.connect(host="localhost", user="root", passwd="250707")
+dataBase = mysql.connector.connect(host="localhost", user="root",
+                                   passwd="250707")
 
 print(dataBase)
 
@@ -15,7 +16,8 @@ cursor.execute("CREATE DATABASE gfg")
 dataBase.close()
 
 #CREATE TABLE
-gfg = mysql.connector.connect(host="localhost", user="root", passwd="250707", database="gfg")
+gfg = mysql.connector.connect(host="localhost", user="root", passwd="250707",
+                              database="gfg")
 
 cursor = gfg.cursor()
 
