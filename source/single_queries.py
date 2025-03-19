@@ -17,6 +17,9 @@ class QueryMaker:
         return self._connector.executeR(query)
     
     
+    def printR(self, read_result):
+        print(tabulate(read_result[0], read_result[1]))
+    
 def main():
     qm = QueryMaker()
     qm.printR(qm.spenders_after("2025-10-01"))
