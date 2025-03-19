@@ -19,6 +19,17 @@ class QueryMaker:
     def print_all(self):
         self.printR(self.select_all())
     
+    def spenders_after(self, date:str):
+        query = f"""SELECT CN AS Customer, SUM(PP) AS `Total Spending`
+                    FROM (
+                        SELECT `Customer Name` AS CN, `Product Price` AS PP
+                        FROM Orders_combined
+                        WHERE date_time > '{date}'
+                        ) AS DER
+                    GROUP BY Customer
+                    ORDER BY `Total Spending` DESC"""
+        return self._connector.executeR(query)
+    
     
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
