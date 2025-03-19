@@ -30,14 +30,22 @@ class QueryMaker:
                     ORDER BY `Total Spending` DESC"""
         return self._connector.executeR(query)
     
+    def nr_sales(self):
+        query = f"""
+                    SELECT `Product Name` AS N, COUNT(`Product Price`) as Revenue
+                    FROM Orders_combined
+                    GROUP BY N
+                    ORDER BY Revenue DESC
+                """
+        return self._connector.executeR(query)
     
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
     
 def main():
     qm = QueryMaker()
-    qm.printR(qm.spenders_after("2025-10-01"))
-    qm.print_all()
+    qm.printR(qm.nr_sales())
+    #qm.print_all()
     
 
 
