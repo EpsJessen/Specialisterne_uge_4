@@ -11,6 +11,11 @@ class QueryMaker:
         db.make_populated_table("Orders_combined", "orders_combined.csv")
         self._connector = Connector()
 
+    #READ QUERIES
+    def select_all(self):
+        query = "SELECT * FROM Orders_combined"
+        return self._connector.executeR(query)
+    
     
 def main():
     qm = QueryMaker()
