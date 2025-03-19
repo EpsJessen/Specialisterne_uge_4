@@ -44,6 +44,9 @@ class DBFromCsv:
                 row[2].replace("T", " ")
                 self._connector.executeCUD(sql_insert % tuple(row))
         
+    def make_populated_table(self, table_name, csv_file):
+        self.add_table(table_name)
+        self.populate_table(table_name, csv_file)
 
-        
+    
 
