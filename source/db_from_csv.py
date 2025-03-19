@@ -49,4 +49,9 @@ class DBFromCsv:
         self.populate_table(table_name, csv_file)
 
     
+def main():
+    db = DBFromCsv()
+    db.make_populated_table("Orders_combined", "orders_combined.csv")
 
+if __name__ == "__main__":
+    main()
