@@ -1,7 +1,7 @@
 from db_from_csv import DBFromCsv
 from connector import Connector
-import datetime
 from tabulate import tabulate
+import datetime
 
 class QueryMaker:
     _connector:Connector
@@ -30,13 +30,17 @@ class QueryMaker:
                     ORDER BY `Total Spending` DESC"""
         return self._connector.executeR(query)
     
-    def nr_sales(self):
+    def nr_sales_by_product(self):
         query = f"""
                     SELECT `Product Name` AS N, COUNT(`Product Price`) as Revenue
                     FROM Orders_combined
                     GROUP BY N
                     ORDER BY Revenue DESC
                 """
+        return self._connector.executeR(query)
+    
+    def nr_sales(self):
+        query = f"SELECT COUNT(ID) FROM Orders_combined"
         return self._connector.executeR(query)
     
     def printR(self, read_result):
