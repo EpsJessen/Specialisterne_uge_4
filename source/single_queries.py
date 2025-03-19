@@ -16,6 +16,9 @@ class QueryMaker:
         query = "SELECT * FROM Orders_combined"
         return self._connector.executeR(query)
     
+    def print_all(self):
+        self.printR(self.select_all())
+    
     
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
