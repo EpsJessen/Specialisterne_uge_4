@@ -70,6 +70,9 @@ class QueryMaker:
     
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
+
+    # UPDATE QUERIES
+    # DELETE QUERIES
     
 def main():
     qm = QueryMaker()
