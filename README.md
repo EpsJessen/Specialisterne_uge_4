@@ -5,7 +5,7 @@
 ### To-Dos:
 
 - [x] Create Connector, class for handling connections to MySQL
-- [ ] Create Populator, class for populating database using Connector
+- [x] Create DB_From_Csv, class for populating database using Connector
   - [ ] Refactor to handle multiple tables with FK relations
 - [ ] Create CRUD, class for making **relevant** CRUD calls using Connector
   - [ ] Analyse database for relevant calls
