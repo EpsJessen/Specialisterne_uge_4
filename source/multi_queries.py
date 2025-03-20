@@ -98,13 +98,15 @@ class QueryMaker:
     
     # Spenders ordered by sum of money spent after given time
     def spenders_after(self, date:str):
-        query = f"""SELECT CN AS Customer, SUM(PP) AS `Total Spending`
+        query = f"""SELECT name AS Customer, TS AS `Total Spending`
                     FROM (
-                        SELECT `Customer_Name` AS CN, `Product_Price` AS PP
-                        FROM Orders_combined
+                        SELECT `customer` AS CID, SUM(`Price`) AS TS
+                        FROM Orders
+                        INNER JOIN Products ON product = Products.id
                         WHERE date_time > '{date}'
+                        GROUP BY Customer
                         ) AS DER
-                    GROUP BY Customer
+                    INNER JOIN Customers ON CID = Customers.id
                     ORDER BY `Total Spending` DESC"""
         return self._connector.executeR(query)
     
