@@ -64,6 +64,19 @@ class DBFromCsv:
         except:
             return input
 
+    def item_to_sql_type(self, item) -> str:
+        type_item = self.try_convert(item)
+        if isinstance(type_item, datetime):
+            return "DATETIME"
+        elif isinstance(type_item, int):
+            return "int"
+        elif isinstance(type_item, float):
+            return "float"
+        else:
+            return "VARCHAR(250)"
+
+
+
     
 def main():
     db = DBFromCsv()
@@ -74,7 +87,7 @@ def main():
         _ = next(csv_reader)
         vals = next(csv_reader)
         for val in vals:
-            print(f"{val} is of type {type(db.try_convert(val))}")
+            print(f"{val} is of sql_type {db.item_to_sql_type(val)}")
 
 if __name__ == "__main__":
     main()
