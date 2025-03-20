@@ -45,7 +45,23 @@ class QueryMaker:
             print(f"Either {customer=} or {product} does not exist in"
                   +"their respective tables")
 
-    
+    # Adds new product
+    def new_product(self, name:str, price:float):
+        next_id = self._max_ID("products")+1
+        
+        query = f"""
+                    INSERT INTO Products (
+                        ID, name, price
+                    )
+                    VALUES (
+                        {next_id}, '{name}','{price}'
+                    )
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print(f"Could not perform {query=}")
+
 
     #READ QUERIES
     # Get full orders_combined table
