@@ -19,8 +19,8 @@ class QueryMaker:
         if not time:
             time = datetime.datetime.now()
         #Gets the number of sales. ID of sales starts at 0 <---IDs SHOULD start at 1
-        #Thus the next ID will be the same as the number of previous orders
-        next_id = self.nr_sales()[0][0][0]
+        #Will assume that it is the same as prev max id plus 1
+        next_id = self._max_ID()+1
         
         query = f"""
                     INSERT INTO Orders_combined (
@@ -67,6 +67,13 @@ class QueryMaker:
     def nr_sales(self):
         query = f"SELECT COUNT(ID) FROM Orders_combined"
         return self._connector.executeR(query)
+    
+    def _max_ID(self):
+        query = "SELECT MAX(ID) FROM Orders_combined"
+        res, _ = self._connector.executeR(query)
+        if res[0][0] is None:
+            return -1
+        return res[0][0]
     
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
