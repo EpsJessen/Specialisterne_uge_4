@@ -105,6 +105,20 @@ class QueryMaker:
             print("Incorrect arguments for query!")
     
     # DELETE QUERIES
+    def delete_rows_where_column_value(self, column_name, current_val):
+        if type(current_val) == str and " " in current_val:
+            current_val = f"'{current_val}'"
+        query = f"""
+                    DELETE FROM Orders_combined
+                    WHERE `{column_name}` = {current_val}
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print("Incorrect arguments for query!")
+    
+    def delete_row_where_id(self, target_id):
+        self.delete_rows_where_column_value("ID", target_id)
 
 
     
