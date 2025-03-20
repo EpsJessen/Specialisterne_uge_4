@@ -80,9 +80,16 @@ class QueryMaker:
             print(f"Could not perform {query=}")
 
     #READ QUERIES
-    # Get full orders_combined table
+    # Get table corresponding to orders combined
     def select_all(self):
-        query = "SELECT * FROM Orders_combined"
+        query = """SELECT Orders.id AS id, date_time,
+                    Customers.name AS customer_name, email AS customer_email,
+                    Products.name AS product_name, price AS product_price
+                    FROM Orders
+                    INNER JOIN Products ON product = Products.id
+                    INNER JOIN Customers On customer = Customers.id
+                    ORDER BY id ASC
+                """
         return self._connector.executeR(query)
     
     # Pretty print full table
