@@ -72,13 +72,42 @@ class QueryMaker:
         print(tabulate(read_result[0], read_result[1]))
 
     # UPDATE QUERIES
+    def update_column_where_id(self, column_name, target_id, new_val):
+        if type(new_val) == str and " " in new_val:
+            new_val = f"'{new_val}'"
+        query = f"""
+                    UPDATE Orders_combined
+                    SET `{column_name}` = '{new_val}'
+                    WHERE ID = {target_id}
+                """
+        self._connector.executeCUD(query)
+        
+    def update_column_where_it_has_value(self, column_name, current_val, new_val):
+        if type(current_val) == str and " " in current_val:
+            current_val = f"'{current_val}'"
+        if type(new_val) == str and " " in new_val:
+            new_val = f"'{new_val}'"
+        query = f"""
+                    UPDATE Orders_combined
+                    SET `{column_name}` = {new_val}
+                    WHERE `{column_name}` = {current_val}
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print("Incorrect arguments for query!")
+    
     # DELETE QUERIES
+
+
     
 def main():
     qm = QueryMaker()
     #qm.printR(qm.nr_sales_by_product())
     
     qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
+    qm.update_column_where_id("Customer Name", 100, "Filippa")
+    qm.update_column_where_it_has_value("Product Name", 200, 100)
     qm.print_all()
     
 
