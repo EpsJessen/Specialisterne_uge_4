@@ -147,8 +147,9 @@ def main():
     qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
     qm.update_column_where_id("Customer Name", 100, "Filippa")
     qm.update_column_where_it_has_value("Product Name", 200, 100)
+    qm.delete_rows_where_column_value("Customer Name", "Wendy Lockman")
+    qm.delete_rows_from_after(datetime.datetime.now())
     qm.print_all()
-    
 
 
 if __name__ == "__main__":
