@@ -14,13 +14,17 @@ class DBFromCsv:
         self._connector = Connector(exists=False)
 
     #Adds table to schema
-    def add_table(self, table_name:str, headers, row, pk:str = "ID") -> None:
+    def add_table(self, table_name:str, headers,
+                  row, fk_dicts, pk:str = "ID") -> None:
         fields = ""
         #Adds each field one by one to query
         for i, name in enumerate(headers):
             fields += f"`{name}` {self.item_to_sql_type(row[i])} NOT NULL,"
         #Adds primary key
         fields += f"PRIMARY KEY (`{pk}`)"
+        if fk_dicts:
+            for fk in fk_dicts:
+                fields += f", FOREIGN KEY (`{fk["fk"]}`) REFERENCES `{fk["table"]}`(`{fk["key"]}`)"
 
         #Creates full query
         create_table_stmnt = f"CREATE TABLE {table_name}({fields});"
@@ -52,15 +56,21 @@ class DBFromCsv:
             self._connector.executeCUD(sql_insert % tuple(row))
     
     # Make and populate a table with data from csv file
-    def make_populated_table(self, table_name, file_name):
+    def make_populated_table(self, table_name, file_name, fk_dicts):
         # Get data from csv file
         os_path = join("data", file_name)
         with open(os_path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             headers = next(csv_reader)
             rows = list(csv_reader)
-        self.add_table(table_name, headers, rows[0])
+        self.add_table(table_name, headers, rows[0], fk_dicts)
         self.populate_table(table_name, headers, rows)
+
+    # Make and populate multiple tables
+    def make_populated_tables(self, table_names, table_files, lists_fk_dicts):
+        # Make each table sequentially
+        for i, name in enumerate(table_names):
+            self.make_populated_table(name, table_files[i], lists_fk_dicts[i])
 
     # Convert csv data to correct format if it is not meant to be string
     def try_convert(self, input):
@@ -113,14 +123,22 @@ class DBFromCsv:
 
 def main():
     db = DBFromCsv()
-    db.make_populated_table("Orders_combined", "orders_combined.csv")
-    os_path = join("data", "orders_combined.csv")
-    with open(os_path, "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        _ = next(csv_reader)
-        vals = next(csv_reader)
-        for val in vals:
-            print(f"{val} is of sql_type {db.item_to_sql_type(val)}")
+    #db.make_populated_table("Orders_combined", "orders_combined.csv")
+    #os_path = join("data", "orders_combined.csv")
+    #with open(os_path, "r") as csv_file:
+    #    csv_reader = csv.reader(csv_file)
+    #    _ = next(csv_reader)
+    #    vals = next(csv_reader)
+    #    for val in vals:
+    #        print(f"{val} is of sql_type {db.item_to_sql_type(val)}")
+    db.make_populated_tables(["customers", "products", "orders"],
+                             ["customers.csv", "products.csv", "orders.csv"],
+                             [None,None,[{"table":"customers", "key":"id",
+                                      "fk":"customer"},
+                                     {"table":"products", "key":"id",
+                                      "fk":"product"}
+                                      ]]
+                            )
 
 if __name__ == "__main__":
     main()
