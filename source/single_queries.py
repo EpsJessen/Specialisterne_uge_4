@@ -90,8 +90,6 @@ class QueryMaker:
     # UPDATE QUERIES
     # Update value in column where ID matches
     def update_column_where_id(self, column_name, target_id, new_val):
-        if not isinstance(new_val, (int, float)):
-            new_val = f"'{new_val}'"
         query = f"""
                     UPDATE Orders_combined
                     SET `{column_name}` = '{new_val}'
