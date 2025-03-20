@@ -80,9 +80,10 @@ class Connector:
     def executeR(self, sql:str):
         cursor = self._get_cursor()
         cursor.execute(sql)
-        result = cursor.fetchall
+        result = cursor.fetchall()
+        columns = cursor.column_names
         cursor.close()
-        return result
+        return result, columns
 
 def main():
     orders_connector = Connector(exists=False)

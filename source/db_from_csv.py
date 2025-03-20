@@ -14,7 +14,7 @@ class DBFromCsv:
 
     def add_table(self, table_name:str) -> None:
         fields = """ID int NOT NULL,
-                    time DATETIME,
+                    date_time DATETIME,
                     `Customer Name` VARCHAR(250) NOT NULL,
                     `Customer Email` VARCHAR(250) NOT NULL,
                     `Product Name` VARCHAR(100) NOT NULL,
@@ -31,7 +31,7 @@ class DBFromCsv:
         os_path = join("data", csv_file)
 
         sql_insert = """INSERT INTO %s (
-                            ID, time, `Customer Name`, `Customer Email`,
+                            ID, date_time, `Customer Name`, `Customer Email`,
                             `Product Name`, `Product Price`)
                             VALUES (%s, '%s', '%s', '%s', '%s', %s)"""
         
