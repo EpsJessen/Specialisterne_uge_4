@@ -120,7 +120,25 @@ class QueryMaker:
     def delete_row_where_id(self, target_id):
         self.delete_rows_where_column_value("ID", target_id)
 
+    def delete_rows_from_before(self, timestamp:datetime.datetime):
+        query = f"""
+                    DELETE FROM Orders_combined
+                    WHERE date_time < '{timestamp}'
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print("Incorrect arguments for query!")
 
+    def delete_rows_from_after(self, timestamp:datetime.datetime) -> None:
+        query = f"""
+                    DELETE FROM Orders_combined
+                    WHERE '{timestamp}' < date_time
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print("Incorrect arguments for query!")
     
 def main():
     qm = QueryMaker()
