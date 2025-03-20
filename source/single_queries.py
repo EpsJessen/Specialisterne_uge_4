@@ -161,13 +161,13 @@ def main():
     qm = QueryMaker()
     #qm.printR(qm.nr_sales_by_product())
     
-    qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
-    qm.update_column_where_id("Customer_Name", 100, "Filippa")
-    qm.update_column_where_it_has_value("Product_Name", "200", "100")
-    qm.delete_rows_where_column_value("Customer_Name", "Wendy Lockman")
-    qm.delete_rows_from_before(datetime.datetime.now())
-    qm.print_all()
-
+    #qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
+    #qm.update_column_where_id("Customer_Name", 100, "Filippa")
+    #qm.update_column_where_it_has_value("Product_Name", "200", "100")
+    #qm.delete_rows_where_column_value("Customer_Name", "Wendy Lockman")
+    #qm.delete_rows_from_before(datetime.datetime.now())
+    #qm.print_all()
+    qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
 
 if __name__ == "__main__":
     main()
