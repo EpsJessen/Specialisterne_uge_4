@@ -20,28 +20,30 @@ class QueryMaker:
         self._connector = Connector()
 
     #CREATE QUERIES
-    # Add a new order to Orders_combined db
-    def new_order(self, customer_name:str, customer_email:str,
-                    product_name:str, product_price:float,
+    # Add a new order to Orders db. Assumes that product and customer
+    # already exists
+    def new_order(self, customer: int,
+                    product: int,
                     time:datetime.datetime|None = None):
         
         if not time:
             time = datetime.datetime.now()
-        #Gets the number of sales. ID of sales starts at 0 <---IDs SHOULD start at 1
         #Will assume that it is the same as prev max id plus 1
-        next_id = self._max_ID()+1
+        next_id = self._max_ID("Orders")+1
         
         query = f"""
-                    INSERT INTO Orders_combined (
-                        ID, date_time, `Customer_Name`, `Customer_email`,
-                        `Product_Name`, `Product_Price`
+                    INSERT INTO Orders (
+                        ID, date_time, `Customer`, `Product`
                     )
                     VALUES (
-                        {next_id}, '{time}','{customer_name}', '{customer_email}',
-                        '{product_name}', {product_price}
+                        {next_id}, '{time}','{customer}', {product}
                     )
                 """
-        self._connector.executeCUD(query)
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print(f"Either {customer=} or {product} does not exist in"
+                  +"their respective tables")
 
     
 
@@ -84,8 +86,8 @@ class QueryMaker:
     
     # Helper function to get the biggest id in table
     # Returns -1 if no items in table
-    def _max_ID(self):
-        query = "SELECT MAX(ID) FROM Orders_combined"
+    def _max_ID(self, table:str):
+        query = f"SELECT MAX(ID) FROM {table}"
         res, _ = self._connector.executeR(query)
         if res[0][0] is None:
             return -1
@@ -167,14 +169,8 @@ class QueryMaker:
     
 def main():
     qm = QueryMaker()
-    #qm.printR(qm.nr_sales_by_product())
-    
-    qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
-    qm.update_column_where_id("Customer_Name", 100, "Filippa")
-    qm.update_column_where_it_has_value("Product_Name", "200", "100")
-    qm.delete_rows_where_column_value("Customer_Name", "Wendy Lockman")
-    qm.delete_rows_from_before(datetime.datetime.now())
-    qm.print_all()
+    #qm.print_all()
+    qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
 
 
 if __name__ == "__main__":
