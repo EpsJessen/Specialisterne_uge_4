@@ -62,6 +62,22 @@ class QueryMaker:
         except:
             print(f"Could not perform {query=}")
 
+    # Adds new customer
+    def new_product(self, name:str, email:str):
+        next_id = self._max_ID("customers")+1
+        
+        query = f"""
+                    INSERT INTO Products (
+                        ID, name, email
+                    )
+                    VALUES (
+                        {next_id}, '{name}','{email}'
+                    )
+                """
+        try:
+            self._connector.executeCUD(query)
+        except:
+            print(f"Could not perform {query=}")
 
     #READ QUERIES
     # Get full orders_combined table
