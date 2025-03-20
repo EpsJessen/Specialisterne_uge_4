@@ -13,35 +13,47 @@ class DBFromCsv:
         # settings defined by Connector
         self._connector = Connector(exists=False)
 
+    #Adds table to schema
     def add_table(self, table_name:str, headers, row, pk:str = "ID") -> None:
         fields = ""
+        #Adds each field one by one to query
         for i, name in enumerate(headers):
             fields += f"`{name}` {self.item_to_sql_type(row[i])} NOT NULL,"
+        #Adds primary key
         fields += f"PRIMARY KEY (`{pk}`)"
 
+        #Creates full query
         create_table_stmnt = f"CREATE TABLE {table_name}({fields});"
 
+        # Drops table if it already exists in the schema, and then adds
+        # current version
         self._connector.executeCUD(f"DROP TABLE IF EXISTS {table_name}")
         self._connector.executeCUD(create_table_stmnt)
 
+    # Adds rows from csv file to table with corresponding headers
     def populate_table(self, table_name:str, headers, rows):
         sql_insert = "INSERT INTO %s ("
-        
+        # Adds each field to query
         for header in headers:
             sql_insert += f"`{header}`, "
         sql_insert = sql_insert[:-2]
-        #DETERMINE WHETHER EACH VALUE SHOULD BE EXPLICITLY MARKED AS STRING
+        # DETERMINEs WHETHER EACH VALUE SHOULD
+        # BE EXPLICITLY MARKED AS STRING
         sql_insert += f") VALUES ({self.stringy_substitude(rows[0])})"
         
+        # Determine which rows contain datetimes
         datetime_columns = self.datetime_columns(rows[0])
+        #Adds each row to the table
         for row in rows:
-            #CONVERT DATETIMES TO PROPER FORMAT
             row = [table_name] + row
+            # Ensures that datetimes have proper format
             for i in datetime_columns:
                 row[i+1]=datetime.fromisoformat(row[i+1])
             self._connector.executeCUD(sql_insert % tuple(row))
-        
+    
+    # Make and populate a table with data from csv file
     def make_populated_table(self, table_name, file_name):
+        # Get data from csv file
         os_path = join("data", file_name)
         with open(os_path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
@@ -50,6 +62,7 @@ class DBFromCsv:
         self.add_table(table_name, headers, rows[0])
         self.populate_table(table_name, headers, rows)
 
+    # Convert csv data to correct format if it is not meant to be string
     def try_convert(self, input):
         try:
             dt_obj = datetime.fromisoformat(input)
@@ -64,7 +77,8 @@ class DBFromCsv:
             return float(input)
         except:
             return input
-        
+    
+    # Determine which columns contain datetime data
     def datetime_columns(self, row):
         columns = []
         for i, item in enumerate(row):
@@ -73,6 +87,7 @@ class DBFromCsv:
                 columns.append(i)
         return columns
     
+    # Determine if data should be sent to database explicitly as string
     def stringy_substitude(self, row):
         substitudes = ""
         for item in row:
@@ -81,8 +96,10 @@ class DBFromCsv:
                 substitudes += "%s, "
             else:
                 substitudes += "'%s', "
+        # remove last ,_ from string
         return substitudes[:-2]
 
+    # Determine which sql type corresponds to data
     def item_to_sql_type(self, item) -> str:
         type_item = self.try_convert(item)
         if isinstance(type_item, datetime):
