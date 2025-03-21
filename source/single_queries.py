@@ -62,10 +62,11 @@ class QueryMaker:
     # Products sorted by amount sold
     def nr_sales_by_product(self):
         query = f"""
-                    SELECT `Product_Name` AS N, COUNT(`Product_Price`) as Revenue
+                    SELECT `Product_Name` AS Name,
+                        COUNT(`Product_Price`) as `Items sold`
                     FROM Orders_combined
-                    GROUP BY N
-                    ORDER BY Revenue DESC
+                    GROUP BY Name
+                    ORDER BY `Items sold` DESC
                 """
         return self._connector.executeR(query)
     
