@@ -3,6 +3,7 @@ from os.path import join
 import csv
 from datetime import datetime
 
+
 # Class for creating a database from a csv file using an instance of the
 # Connector class
 class DBFromCsv:
@@ -13,27 +14,28 @@ class DBFromCsv:
         # settings defined by Connector
         self._connector = Connector(exists=False)
 
-    #Adds table to schema
-    def add_table(self, table_name:str, headers,
-                  row, fk_dicts = None, pk:str = "ID") -> None:
+    # Adds table to schema
+    def add_table(
+        self, table_name: str, headers, row, fk_dicts=None, pk: str = "ID"
+    ) -> None:
         fields = ""
-        #Adds each field one by one to query
+        # Adds each field one by one to query
         for i, name in enumerate(headers):
             fields += f"`{name}` {self.item_to_sql_type(row[i])} NOT NULL,"
-        #Adds primary key
+        # Adds primary key
         fields += f"PRIMARY KEY (`{pk}`)"
         if fk_dicts != None:
             for fk in fk_dicts:
                 fields += f""", FOREIGN KEY (`{fk["fk"]}`) 
                             REFERENCES `{fk["table"]}`(`{fk["key"]}`)"""
-                # if row in foreign table is deleted, corresponding 
+                # if row in foreign table is deleted, corresponding
                 # rows in current table is too
                 fields += " ON DELETE CASCADE"
-                # if row in foreign table is updated, corresponding 
+                # if row in foreign table is updated, corresponding
                 # rows in current table is too
-                fields += " ON UPDATE CASCADE"            
+                fields += " ON UPDATE CASCADE"
 
-        #Creates full query
+        # Creates full query
         create_table_stmnt = f"CREATE TABLE {table_name}({fields});"
 
         # Drops table if it already exists in the schema, and then adds
@@ -42,7 +44,7 @@ class DBFromCsv:
         self._connector.executeCUD(create_table_stmnt)
 
     # Adds rows from csv file to table with corresponding headers
-    def populate_table(self, table_name:str, headers, rows):
+    def populate_table(self, table_name: str, headers, rows):
         sql_insert = "INSERT INTO %s ("
         # Adds each field to query
         for header in headers:
@@ -51,19 +53,19 @@ class DBFromCsv:
         # DETERMINEs WHETHER EACH VALUE SHOULD
         # BE EXPLICITLY MARKED AS STRING
         sql_insert += f") VALUES ({self.stringy_substitude(rows[0])})"
-        
+
         # Determine which rows contain datetimes
         datetime_columns = self.datetime_columns(rows[0])
-        #Adds each row to the table
+        # Adds each row to the table
         for row in rows:
             row = [table_name] + row
             # Ensures that datetimes have proper format
             for i in datetime_columns:
-                row[i+1]=datetime.fromisoformat(row[i+1])
+                row[i + 1] = datetime.fromisoformat(row[i + 1])
             self._connector.executeCUD(sql_insert % tuple(row))
-    
+
     # Make and populate a table with data from csv file
-    def make_populated_table(self, table_name, file_name, fk_dicts = None):
+    def make_populated_table(self, table_name, file_name, fk_dicts=None):
         # Get data from csv file
         os_path = join("data", file_name)
         with open(os_path, "r") as csv_file:
@@ -94,7 +96,7 @@ class DBFromCsv:
             return float(input)
         except:
             return input
-    
+
     # Determine which columns contain datetime data
     def datetime_columns(self, row):
         columns = []
@@ -103,7 +105,7 @@ class DBFromCsv:
             if isinstance(type_item, datetime):
                 columns.append(i)
         return columns
-    
+
     # Determine if data should be sent to database explicitly as string
     def stringy_substitude(self, row):
         substitudes = ""
@@ -128,24 +130,30 @@ class DBFromCsv:
         else:
             return "VARCHAR(250)"
 
+
 def main():
     db = DBFromCsv()
-    #db.make_populated_table("Orders_combined", "orders_combined.csv")
-    #os_path = join("data", "orders_combined.csv")
-    #with open(os_path, "r") as csv_file:
+    # db.make_populated_table("Orders_combined", "orders_combined.csv")
+    # os_path = join("data", "orders_combined.csv")
+    # with open(os_path, "r") as csv_file:
     #    csv_reader = csv.reader(csv_file)
     #    _ = next(csv_reader)
     #    vals = next(csv_reader)
     #    for val in vals:
     #        print(f"{val} is of sql_type {db.item_to_sql_type(val)}")
-    db.make_populated_tables(["customers", "products", "orders"],
-                             ["customers.csv", "products.csv", "orders.csv"],
-                             [None,None,[{"table":"customers", "key":"id",
-                                      "fk":"customer"},
-                                     {"table":"products", "key":"id",
-                                      "fk":"product"}
-                                      ]]
-                            )
+    db.make_populated_tables(
+        ["customers", "products", "orders"],
+        ["customers.csv", "products.csv", "orders.csv"],
+        [
+            None,
+            None,
+            [
+                {"table": "customers", "key": "id", "fk": "customer"},
+                {"table": "products", "key": "id", "fk": "product"},
+            ],
+        ],
+    )
+
 
 if __name__ == "__main__":
     main()

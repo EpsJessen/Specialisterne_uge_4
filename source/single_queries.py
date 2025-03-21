@@ -3,26 +3,32 @@ from connector import Connector
 from tabulate import tabulate
 import datetime
 
-class SingleQueryMaker:
-    _connector:Connector
 
-    # Assumes that Database orders is up and running and is populated 
+class SingleQueryMaker:
+    _connector: Connector
+
+    # Assumes that Database orders is up and running and is populated
     # with tables matching those in ./data
     def __init__(self):
         self._connector = Connector(dbname="orders", exists=True)
 
-    #CREATE QUERIES
+    # CREATE QUERIES
     # Add a new order to Orders_combined db
-    def new_order(self, customer_name:str, customer_email:str,
-                    product_name:str, product_price:float,
-                    time:datetime.datetime|None = None):
-        
+    def new_order(
+        self,
+        customer_name: str,
+        customer_email: str,
+        product_name: str,
+        product_price: float,
+        time: datetime.datetime | None = None,
+    ):
+
         if not time:
             time = datetime.datetime.now()
-        #Gets the number of sales. ID of sales starts at 0 <---IDs SHOULD start at 1
-        #Will assume that it is the same as prev max id plus 1
-        next_id = self._max_ID()+1
-        
+        # Gets the number of sales. ID of sales starts at 0 <---IDs SHOULD start at 1
+        # Will assume that it is the same as prev max id plus 1
+        next_id = self._max_ID() + 1
+
         query = f"""
                     INSERT INTO Orders_combined (
                         ID, date_time, `Customer_Name`, `Customer_email`,
@@ -35,20 +41,18 @@ class SingleQueryMaker:
                 """
         self._connector.executeCUD(query)
 
-    
-
-    #READ QUERIES
+    # READ QUERIES
     # Get full orders_combined table
     def select_all(self):
         query = "SELECT * FROM Orders_combined"
         return self._connector.executeR(query)
-    
+
     # Pretty print full table
     def print_all(self):
         self.printR(self.select_all())
-    
+
     # Spenders ordered by sum of money spent after given time
-    def spenders_after(self, date:str):
+    def spenders_after(self, date: str):
         query = f"""SELECT CN AS Customer, SUM(PP) AS `Total Spending`
                     FROM (
                         SELECT `Customer_Name` AS CN, `Product_Price` AS PP
@@ -58,7 +62,7 @@ class SingleQueryMaker:
                     GROUP BY Customer
                     ORDER BY `Total Spending` DESC"""
         return self._connector.executeR(query)
-    
+
     # Products sorted by amount sold
     def nr_sales_by_product(self):
         query = f"""
@@ -69,12 +73,12 @@ class SingleQueryMaker:
                     ORDER BY `Items sold` DESC
                 """
         return self._connector.executeR(query)
-    
+
     # Total number of sales
     def nr_sales(self):
         query = f"SELECT COUNT(ID) FROM Orders_combined"
         return self._connector.executeR(query)
-    
+
     # Helper function to get the biggest id in table
     # Returns -1 if no items in table
     def _max_ID(self):
@@ -83,7 +87,7 @@ class SingleQueryMaker:
         if res[0][0] is None:
             return -1
         return res[0][0]
-    
+
     # Pretty print for retur of queries
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
@@ -97,10 +101,9 @@ class SingleQueryMaker:
                     WHERE ID = {target_id}
                 """
         self._connector.executeCUD(query)
-    
+
     # Update value in column where the value of the column matches
-    def update_column_where_it_has_value(self, column_name,
-                                         current_val, new_val):
+    def update_column_where_it_has_value(self, column_name, current_val, new_val):
         if not isinstance(current_val, (int, float)):
             current_val = f"'{current_val}'"
             new_val = f"'{new_val}'"
@@ -114,9 +117,9 @@ class SingleQueryMaker:
         except:
             print("Incorrect arguments for query!")
             print(f"{query=}")
-    
+
     # DELETE QUERIES
-    # Delete every row where the value of given column matches 
+    # Delete every row where the value of given column matches
     def delete_rows_where_column_value(self, column_name, current_val):
         if not isinstance(current_val, (int, float)):
             current_val = f"'{current_val}'"
@@ -135,7 +138,7 @@ class SingleQueryMaker:
         self.delete_rows_where_column_value("ID", target_id)
 
     # Delete rows with date_time is older than given time
-    def delete_rows_from_before(self, timestamp:datetime.datetime):
+    def delete_rows_from_before(self, timestamp: datetime.datetime):
         query = f"""
                     DELETE FROM Orders_combined
                     WHERE date_time < '{timestamp}'
@@ -147,7 +150,7 @@ class SingleQueryMaker:
             print(f"{query=}")
 
     # Delete rows with date_time is newer than given time
-    def delete_rows_from_after(self, timestamp:datetime.datetime) -> None:
+    def delete_rows_from_after(self, timestamp: datetime.datetime) -> None:
         query = f"""
                     DELETE FROM Orders_combined
                     WHERE '{timestamp}' < date_time
@@ -157,20 +160,22 @@ class SingleQueryMaker:
         except:
             print("Incorrect arguments for query!")
             print(f"{query=}")
-    
+
+
 def main():
     db = DBFromCsv()
     db.make_populated_table("Orders_combined", "orders_combined.csv")
     qm = SingleQueryMaker()
-    #qm.printR(qm.nr_sales_by_product())
-    
-    #qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
-    #qm.update_column_where_id("Customer_Name", 100, "Filippa")
-    #qm.update_column_where_it_has_value("Product_Name", "200", "100")
-    #qm.delete_rows_where_column_value("Customer_Name", "Wendy Lockman")
-    #qm.delete_rows_from_before(datetime.datetime.now())
-    #qm.print_all()
+    # qm.printR(qm.nr_sales_by_product())
+
+    # qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
+    # qm.update_column_where_id("Customer_Name", 100, "Filippa")
+    # qm.update_column_where_it_has_value("Product_Name", "200", "100")
+    # qm.delete_rows_where_column_value("Customer_Name", "Wendy Lockman")
+    # qm.delete_rows_from_before(datetime.datetime.now())
+    # qm.print_all()
     qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
+
 
 if __name__ == "__main__":
     main()
