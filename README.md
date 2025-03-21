@@ -14,6 +14,6 @@
 ### Running program:
 
 To run the code, first install the requirements in the venv.  
-Then change `credentials.txt` to match yours for MySQL.  
+Then change `credentials.json` to match yours for MySQL.  
 Then run the file `orders_and_queries.py` to create the database and 
 see common queries and their results when used on the database
