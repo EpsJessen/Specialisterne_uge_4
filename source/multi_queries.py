@@ -136,7 +136,7 @@ class QueryMaker:
     
     # Total number of sales
     def nr_sales(self):
-        query = f"SELECT COUNT(ID) FROM Orders_combined"
+        query = f"SELECT COUNT(ID) FROM Orders"
         return self._connector.executeR(query)
     
     # Helper function to get the biggest id in table
