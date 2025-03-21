@@ -13,7 +13,7 @@ class Connector:
     dbname:str
 
     def __init__(self, dbname:str="orders", exists:bool=True):
-        credentials_file = join("credentials.txt")
+        credentials_file = join("credentials.json")
         with open(credentials_file) as json_credentials:
             credentials:dict = json.load(json_credentials)
         self.host = credentials.get("host")
