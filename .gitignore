@@ -1,6 +1,3 @@
-# Specific to package
-credential.txt
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
