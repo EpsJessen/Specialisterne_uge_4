@@ -29,7 +29,11 @@ class QueryMaker:
         if not time:
             time = datetime.datetime.now()
         #Will assume that it is the same as prev max id plus 1
-        next_id = self._max_ID("Orders")+1
+        try:
+            next_id = self._max_ID("Orders")+1
+        except:
+            print(f"Table Orders does not exist")
+            return
         
         query = f"""
                     INSERT INTO Orders (
@@ -47,7 +51,11 @@ class QueryMaker:
 
     # Adds new product
     def new_product(self, name:str, price:float):
-        next_id = self._max_ID("products")+1
+        try:
+            next_id = self._max_ID("products")+1
+        except:
+            print(f"Table Products does not exist")
+            return
         
         query = f"""
                     INSERT INTO Products (
@@ -64,7 +72,11 @@ class QueryMaker:
 
     # Adds new customer
     def new_product(self, name:str, email:str):
-        next_id = self._max_ID("customers")+1
+        try:
+            next_id = self._max_ID("customers")+1
+        except:
+            print(f"Table Customers does not exist")
+            return
         
         query = f"""
                     INSERT INTO Products (
