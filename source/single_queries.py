@@ -6,10 +6,12 @@ import datetime
 class SingleQueryMaker:
     _connector:Connector
 
+    # Assumes that Database orders is up and running and is populated 
+    # with tables matching those in ./data
     def __init__(self):
         db = DBFromCsv()
         db.make_populated_table("Orders_combined", "orders_combined.csv")
-        self._connector = Connector()
+        self._connector = Connector(dbname="orders", exists=True)
 
     #CREATE QUERIES
     # Add a new order to Orders_combined db

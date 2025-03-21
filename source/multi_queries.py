@@ -6,6 +6,8 @@ import datetime
 class MultiQueryMaker:
     _connector:Connector
 
+    # Assumes that Database orders is up and running and is populated 
+    # with tables matching those in ./data
     def __init__(self):
         db = DBFromCsv()
         db.make_populated_table("Orders_combined", "orders_combined.csv")
@@ -17,7 +19,7 @@ class MultiQueryMaker:
                                       "fk":"product"}
                                       ]]
                             )
-        self._connector = Connector()
+        self._connector = Connector(dbname="orders", exists=True)
 
     #CREATE QUERIES
     # Add a new order to Orders db. Assumes that product and customer
