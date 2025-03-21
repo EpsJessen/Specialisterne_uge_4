@@ -164,46 +164,65 @@ class MultiQueryMaker:
                 """
         self._connector.executeCUD(query)
     
-    # Update value in column where the value of the column matches
-    def update_column_where_it_has_value(self, column_name,
+    # Update value in column in table where 
+    # the value of the column matches
+    def update_column_where_it_has_value(self, table, column_name:str,
                                          current_val, new_val):
         if not isinstance(current_val, (int, float)):
             current_val = f"'{current_val}'"
             new_val = f"'{new_val}'"
         query = f"""
-                    UPDATE Orders_combined
+                    UPDATE {table}
                     SET `{column_name}` = {new_val}
                     WHERE `{column_name}` = {current_val}
                 """
         try:
             self._connector.executeCUD(query)
         except:
-            print("Incorrect arguments for query!")
+            print("Could not perform query!")
+            if column_name.lower() == "id":
+                print(f"Perhaps id {new_val} is already assigned")
             print(f"{query=}")
     
     # DELETE QUERIES
-    # Delete every row where the value of given column matches 
-    def delete_rows_where_column_value(self, column_name, current_val):
+    # Delete every row where the value of given column matches
+    def _delete_row(self, table, column_name, current_val):
         if not isinstance(current_val, (int, float)):
             current_val = f"'{current_val}'"
         query = f"""
-                    DELETE FROM Orders_combined
+                    DELETE FROM `{table}`
                     WHERE `{column_name}` = {current_val}
                 """
         try:
             self._connector.executeCUD(query)
         except:
-            print("Incorrect arguments for query!")
+            print("Could not perform query!")
             print(f"{query=}")
 
-    # Delete row where id matches
-    def delete_row_where_id(self, target_id):
-        self.delete_rows_where_column_value("ID", target_id)
+    # Delete every order row where the value of given column matches 
+    def delete_orders_where_column_value(self, column_name, current_val):
+        self._delete_row("Orders", column_name, current_val)
 
+    # Delete order row where id matches
+    def delete_order_where_id(self, target_id):
+        self.delete_orders_where_column_value("ID", target_id)
+
+    # Delete products and corresponding orders
+    def delete_product_and_matching_orders(self, target_id):
+        # Works to delete orders as well since we have ON DELETE CASCADE
+        # added for the foreign key relation
+        self._delete_row("Products", "ID", target_id)
+
+    # Delete customer and corresponding orders
+    def delete_customer_and_matching_orders(self, target_id):
+        # Works to delete orders as well since we have ON DELETE CASCADE
+        # added for the foreign key relation
+        self._delete_row("Customer", "ID", target_id)
+    
     # Delete rows with date_time is older than given time
     def delete_rows_from_before(self, timestamp:datetime.datetime):
         query = f"""
-                    DELETE FROM Orders_combined
+                    DELETE FROM Orders
                     WHERE date_time < '{timestamp}'
                 """
         try:
@@ -215,7 +234,7 @@ class MultiQueryMaker:
     # Delete rows with date_time is newer than given time
     def delete_rows_from_after(self, timestamp:datetime.datetime) -> None:
         query = f"""
-                    DELETE FROM Orders_combined
+                    DELETE FROM Orders
                     WHERE '{timestamp}' < date_time
                 """
         try:
@@ -228,8 +247,9 @@ def main():
     qm = MultiQueryMaker()
     #qm.print_all()
     #qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
-    qm.printR(qm.nr_sales_by_product())
-
+    #qm.printR(qm.nr_sales_by_product())
+    qm.update_column_where_it_has_value("products", "id", 1, 15)
+    qm.print_all()
 
 if __name__ == "__main__":
     main()
