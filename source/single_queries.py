@@ -3,7 +3,7 @@ from connector import Connector
 from tabulate import tabulate
 import datetime
 
-class QueryMaker:
+class SingleQueryMaker:
     _connector:Connector
 
     def __init__(self):

@@ -3,7 +3,7 @@ from connector import Connector
 from tabulate import tabulate
 import datetime
 
-class QueryMaker:
+class MultiQueryMaker:
     _connector:Connector
 
     def __init__(self):
@@ -223,7 +223,7 @@ class QueryMaker:
             print(f"{query=}")
     
 def main():
-    qm = QueryMaker()
+    qm = MultiQueryMaker()
     #qm.print_all()
     #qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
     qm.printR(qm.nr_sales_by_product())
