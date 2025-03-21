@@ -15,16 +15,23 @@ class DBFromCsv:
 
     #Adds table to schema
     def add_table(self, table_name:str, headers,
-                  row, fk_dicts, pk:str = "ID") -> None:
+                  row, fk_dicts = None, pk:str = "ID") -> None:
         fields = ""
         #Adds each field one by one to query
         for i, name in enumerate(headers):
             fields += f"`{name}` {self.item_to_sql_type(row[i])} NOT NULL,"
         #Adds primary key
         fields += f"PRIMARY KEY (`{pk}`)"
-        if fk_dicts:
+        if fk_dicts != None:
             for fk in fk_dicts:
-                fields += f", FOREIGN KEY (`{fk["fk"]}`) REFERENCES `{fk["table"]}`(`{fk["key"]}`)"
+                fields += f""", FOREIGN KEY (`{fk["fk"]}`) 
+                            REFERENCES `{fk["table"]}`(`{fk["key"]}`)"""
+                # if row in foreign table is deleted, corresponding 
+                # rows in current table is too
+                fields += " ON DELETE CASCADE"
+                # if row in foreign table is updated, corresponding 
+                # rows in current table is too
+                fields += " ON UPDATE CASCADE"            
 
         #Creates full query
         create_table_stmnt = f"CREATE TABLE {table_name}({fields});"
@@ -56,7 +63,7 @@ class DBFromCsv:
             self._connector.executeCUD(sql_insert % tuple(row))
     
     # Make and populate a table with data from csv file
-    def make_populated_table(self, table_name, file_name, fk_dicts):
+    def make_populated_table(self, table_name, file_name, fk_dicts = None):
         # Get data from csv file
         os_path = join("data", file_name)
         with open(os_path, "r") as csv_file:

@@ -9,7 +9,7 @@
   - [x] Refactor to handle multiple tables with FK relations
 - [x] Create CRUD, class for making **relevant** CRUD calls using Connector
   - [x] Analyse database for relevant calls
-  - [ ] Refactor to handle tables with FK
+  - [x] Refactor to handle tables with FK
 
 ### Running program:
 
