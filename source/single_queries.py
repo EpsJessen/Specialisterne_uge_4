@@ -9,8 +9,6 @@ class SingleQueryMaker:
     # Assumes that Database orders is up and running and is populated 
     # with tables matching those in ./data
     def __init__(self):
-        db = DBFromCsv()
-        db.make_populated_table("Orders_combined", "orders_combined.csv")
         self._connector = Connector(dbname="orders", exists=True)
 
     #CREATE QUERIES
@@ -161,6 +159,8 @@ class SingleQueryMaker:
             print(f"{query=}")
     
 def main():
+    db = DBFromCsv()
+    db.make_populated_table("Orders_combined", "orders_combined.csv")
     qm = SingleQueryMaker()
     #qm.printR(qm.nr_sales_by_product())
     
