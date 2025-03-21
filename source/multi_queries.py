@@ -148,7 +148,7 @@ class QueryMaker:
             return -1
         return res[0][0]
     
-    # Pretty print for retur of queries
+    # Pretty print for return of queries
     def printR(self, read_result):
         print(tabulate(read_result[0], read_result[1]))
 
