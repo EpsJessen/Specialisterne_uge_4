@@ -24,7 +24,14 @@ class DBFromCsv:
         fields += f"PRIMARY KEY (`{pk}`)"
         if fk_dicts != None:
             for fk in fk_dicts:
-                fields += f", FOREIGN KEY (`{fk["fk"]}`) REFERENCES `{fk["table"]}`(`{fk["key"]}`)"
+                fields += f""", FOREIGN KEY (`{fk["fk"]}`) 
+                            REFERENCES `{fk["table"]}`(`{fk["key"]}`)"""
+                # if row in foreign table is deleted, corresponding 
+                # rows in current table is too
+                fields += " ON DELETE CASCADE"
+                # if row in foreign table is updated, corresponding 
+                # rows in current table is too
+                fields += " ON UPDATE CASCADE"            
 
         #Creates full query
         create_table_stmnt = f"CREATE TABLE {table_name}({fields});"
