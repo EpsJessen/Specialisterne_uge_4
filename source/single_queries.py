@@ -161,7 +161,7 @@ class SingleQueryMaker:
             print(f"{query=}")
     
 def main():
-    qm = QueryMaker()
+    qm = SingleQueryMaker()
     #qm.printR(qm.nr_sales_by_product())
     
     #qm.new_order("Epsilon","not_my@email.com","yoga-mat",100)
