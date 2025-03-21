@@ -125,10 +125,12 @@ class QueryMaker:
     # Products sorted by amount sold
     def nr_sales_by_product(self):
         query = f"""
-                    SELECT `Product_Name` AS N, COUNT(`Product_Price`) as Revenue
-                    FROM Orders_combined
-                    GROUP BY N
-                    ORDER BY Revenue DESC
+                    SELECT Products.name AS Name,
+                        COUNT(Orders.id) as `Items sold`
+                    FROM Orders
+                    INNER JOIN Products ON product = Products.id
+                    GROUP BY Name
+                    ORDER BY `Items sold` DESC
                 """
         return self._connector.executeR(query)
     
@@ -223,7 +225,8 @@ class QueryMaker:
 def main():
     qm = QueryMaker()
     #qm.print_all()
-    qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
+    #qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
+    qm.printR(qm.nr_sales_by_product())
 
 
 if __name__ == "__main__":
