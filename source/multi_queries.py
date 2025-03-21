@@ -9,16 +9,6 @@ class MultiQueryMaker:
     # Assumes that Database orders is up and running and is populated 
     # with tables matching those in ./data
     def __init__(self):
-        db = DBFromCsv()
-        db.make_populated_table("Orders_combined", "orders_combined.csv")
-        db.make_populated_tables(["customers", "products", "orders"],
-                             ["customers.csv", "products.csv", "orders.csv"],
-                             [None,None,[{"table":"customers", "key":"id",
-                                      "fk":"customer"},
-                                     {"table":"products", "key":"id",
-                                      "fk":"product"}
-                                      ]]
-                            )
         self._connector = Connector(dbname="orders", exists=True)
 
     #CREATE QUERIES
@@ -244,6 +234,15 @@ class MultiQueryMaker:
             print(f"{query=}")
     
 def main():
+    db = DBFromCsv()
+    db.make_populated_tables(["customers", "products", "orders"],
+                             ["customers.csv", "products.csv", "orders.csv"],
+                             [None,None,[{"table":"customers", "key":"id",
+                                      "fk":"customer"},
+                                     {"table":"products", "key":"id",
+                                      "fk":"product"}
+                                      ]]
+                            )
     qm = MultiQueryMaker()
     #qm.print_all()
     #qm.printR(qm.spenders_after(datetime.datetime(2025, 12, 1)))
