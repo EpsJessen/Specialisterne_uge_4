@@ -116,7 +116,10 @@ class MultiQueryMaker:
         self.printR(self.select_all(limit, offset))
 
     # Spenders ordered by sum of money spent after given time
-    def spenders_after(self, date: str):
+    # Defaults to right now
+    def spenders_after(self, date: datetime.datetime | None = None):
+        if date is None:
+            date = datetime.datetime.now()
         query = f"""SELECT name AS Customer, TS AS `Total Spending`
                     FROM (
                         SELECT `customer` AS CID, SUM(`Price`) AS TS
