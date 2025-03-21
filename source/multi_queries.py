@@ -88,7 +88,7 @@ class MultiQueryMaker:
 
     # READ QUERIES
     # Get table corresponding to orders combined
-    def select_all(self):
+    def select_all(self, limit: int | None = None, offset: int | None = None):
         query = """SELECT Orders.id AS id, date_time,
                     Customers.name AS customer_name, email AS customer_email,
                     Products.name AS product_name, price AS product_price
@@ -97,11 +97,23 @@ class MultiQueryMaker:
                     INNER JOIN Customers On customer = Customers.id
                     ORDER BY id ASC
                 """
+        if limit is not None:
+            query += f" LIMIT {limit}"
+        if offset is not None:
+            query += f" OFFSET {offset}"
+        return self._connector.executeR(query)
+    
+    # Get all from table
+    def get_table(self, table:str):
+        query = f"""
+                    SELECT *
+                    FROM `{table}`
+                """
         return self._connector.executeR(query)
 
     # Pretty print full table
-    def print_all(self):
-        self.printR(self.select_all())
+    def print_all(self, limit = None, offset = None):
+        self.printR(self.select_all(limit, offset))
 
     # Spenders ordered by sum of money spent after given time
     def spenders_after(self, date: str):
