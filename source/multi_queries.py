@@ -234,17 +234,29 @@ class MultiQueryMaker:
     def delete_order_where_id(self, target_id):
         self.delete_orders_where_column_value("ID", target_id)
 
-    # Delete products and corresponding orders
+    # Delete product and corresponding orders
     def delete_product_and_matching_orders(self, target_id):
         # Works to delete orders as well since we have ON DELETE CASCADE
         # added for the foreign key relation
         self._delete_row("Products", "ID", target_id)
 
+    # Delete products and corresponding orders
+    def delete_products_and_matching_orders(self, target_column, target_value):
+        # Works to delete orders as well since we have ON DELETE CASCADE
+        # added for the foreign key relation
+        self._delete_row("Products", target_column, target_value)
+
     # Delete customer and corresponding orders
     def delete_customer_and_matching_orders(self, target_id):
         # Works to delete orders as well since we have ON DELETE CASCADE
         # added for the foreign key relation
-        self._delete_row("Customer", "ID", target_id)
+        self._delete_row("Customers", "ID", target_id)
+    
+    # Delete customer and corresponding orders
+    def delete_customers_and_matching_orders(self, target_column, target_value):
+        # Works to delete orders as well since we have ON DELETE CASCADE
+        # added for the foreign key relation
+        self._delete_row("Customers", target_column, target_value)
 
     # Delete rows with date_time is older than given time
     def delete_rows_from_before(self, timestamp: datetime.datetime):
