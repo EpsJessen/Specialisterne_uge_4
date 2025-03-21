@@ -1,5 +1,7 @@
 import mysql.connector
 import mysql.connector.cursor
+from os.path import join
+import json
 
 # Class for handling interactions with a MySQL server and database
 class Connector:
@@ -10,11 +12,13 @@ class Connector:
     _passwd:str
     dbname:str
 
-    def __init__(self, host:str="localhost", user:str="root",
-                 passwd:str="250707", dbname:str="orders", exists:bool=True):
-        self.host = host
-        self.user = user
-        self._passwd = passwd
+    def __init__(self, dbname:str="orders", exists:bool=True):
+        credentials_file = join("credentials.txt")
+        with open(credentials_file) as json_credentials:
+            credentials:dict = json.load(json_credentials)
+        self.host = credentials.get("host")
+        self.user = credentials.get("user")
+        self._passwd = credentials.get("passwd")
         self.dbname = dbname
         self._connection = None
         self._set_connection(exists)
